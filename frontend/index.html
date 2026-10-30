@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AWS URL Shortener — Acortador de Enlaces</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="badge">AWS Cloud Architecture · S3 + EC2 + DynamoDB</div>
+      <h1>Acortador de Enlaces</h1>
+      <p class="subtitle">
+        Registra una dirección web larga, genera un identificador único (UUID) en FastAPI y almacénalo en Amazon DynamoDB.
+      </p>
+    </header>
+
+    <!-- Configuración rápida del endpoint del Backend EC2 -->
+    <section class="card config-card">
+      <div class="config-header">
+        <label for="apiBaseUrl">URL del Backend (Amazon EC2):</label>
+        <span id="apiStatusBadge" class="status-pill status-neutral">Sin verificar</span>
+      </div>
+      <div class="input-group">
+        <input
+          type="url"
+          id="apiBaseUrl"
+          placeholder="http://<ip-publica-ec2>:8000"
+          autocomplete="off"
+        />
+        <button type="button" id="checkApiBtn" class="btn btn-secondary">
+          Probar conexión
+        </button>
+      </div>
+      <small class="hint">
+        Puedes definir esta URL de forma fija en <code>app.js</code> (constante <code>DEFAULT_API_BASE_URL</code>) o ajustarla aquí.
+      </small>
+    </section>
+
+    <!-- Formulario principal: Acortar URL (POST /shorten) -->
+    <main class="card">
+      <h2>1. Crear enlace corto</h2>
+      <form id="shortenForm" novalidate>
+        <label for="originalUrl">URL original</label>
+        <div class="input-group">
+          <input
+            type="url"
+            id="originalUrl"
+            name="originalUrl"
+            placeholder="https://www.example.com/articulos/arquitectura-cloud"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" id="shortenBtn" class="btn btn-primary">
+            Acortar URL
+          </button>
+        </div>
+      </form>
+
+      <!-- Mensajes de error -->
+      <div id="errorAlert" class="alert alert-error hidden" role="alert"></div>
+
+      <!-- Resultado del enlace corto generado -->
+      <div id="resultBox" class="result-box hidden">
+        <div class="result-header">
+          <span class="success-tag">Enlace generado con éxito</span>
+          <span id="resultUuid" class="uuid-tag"></span>
+        </div>
+
+        <div class="short-url-row">
+          <a id="shortUrlLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+          <div class="action-buttons">
+            <button type="button" id="copyBtn" class="btn btn-outline">
+              Copiar enlace
+            </button>
+          </div>
+        </div>
+
+        <p class="original-preview">
+          <strong>Destino original:</strong>
+          <span id="originalUrlPreview"></span>
+        </p>
+      </div>
+    </main>
+
+    <!-- Sección de consulta: GET /urls/{short_code} -->
+    <section class="card">
+      <h2>2. Consultar información de un enlace</h2>
+      <p class="section-desc">
+        Verifica los metadatos almacenados en DynamoDB mediante el endpoint <code>GET /urls/{short_code}</code>.
+      </p>
+      <form id="lookupForm" novalidate>
+        <label for="lookupCode">Código UUID (<code>short_code</code>)</label>
+        <div class="input-group">
+          <input
+            type="text"
+            id="lookupCode"
+            placeholder="550e8400-e29b-41d4-a716-446655440000"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" id="lookupBtn" class="btn btn-secondary">
+            Consultar
+          </button>
+        </div>
+      </form>
+
+      <div id="lookupError" class="alert alert-error hidden" role="alert"></div>
+
+      <div id="lookupResult" class="lookup-result hidden">
+        <dl class="meta-grid">
+          <div>
+            <dt>UUID (short_code)</dt>
+            <dd id="metaShortCode"></dd>
+          </div>
+          <div>
+            <dt>URL Original (original_url)</dt>
+            <dd><a id="metaOriginalUrl" href="#" target="_blank" rel="noopener noreferrer"></a></dd>
+          </div>
+          <div>
+            <dt>Fecha de Creación (created_at)</dt>
+            <dd id="metaCreatedAt"></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Proyecto Midterm — Amazon S3 · Amazon EC2 (FastAPI) · Amazon DynamoDB</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

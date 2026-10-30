@@ -1,0 +1,20 @@
+# Entornos virtuales de Python
+venv/
+.venv/
+env/
+
+# Archivos compilados y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variables de entorno y secretos locales (nunca subir claves ni .env)
+.env
+*.pem
+*.ppk
+
+# Editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
